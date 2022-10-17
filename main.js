@@ -8,6 +8,9 @@ const {
 } = require("electron");
 const path = require("path");
 
+const fs = require("fs");
+const ytdl = require("ytdl-core");
+
 const isDev = process.env.NODE_ENV !== "production";
 
 let mainWindow;
@@ -104,6 +107,18 @@ const menu = [
 // Respond to ipcRenderer
 ipcMain.on("trivial:generate", (e, options) => {
   console.log(options);
+
+  const download = ytdl("https://youtu.be/Ayi2CJU2xmQ", {
+    filter: "audioonly",
+  });
+
+  // create a write stream to write the data from ytdl to disk
+  const writeStream = fs.createWriteStream("Ayi2CJU2xmQ.mp3"); // path eg. './audio.mp4'
+
+  // then pipe the download stream to the write stream, what this basically does
+  // is redirect whatever data comes out of download stream into the write stream
+  // thus writing it into disk
+  download.pipe(writeStream);
 });
 
 ipcMain.on("list:index", (e, options) => {

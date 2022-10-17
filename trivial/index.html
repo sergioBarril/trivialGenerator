@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../renderer/css/style.css" />    
+    <title>Trivial Generator</title>
+    <script src="trivial.js" defer></script>
+</head>
+
+<body class="bg-sky-800">
+    <h1 class="text-white font-bold text-2xl ml-5 mt-5">Anime Trivial</h1>
+    <div class="flex justify-around w-full py-0 px-5 mt-5 gap-5">
+        <div id="leftPanel" class="w-[250px] px-0 mr-1 flex-shrink-0">
+            <div id="div-controls" class="border rounded border-black w-full px-2 mb-6 h-32 bg-sky-300">
+                <div id="time" class="pt-1 text-lg font-bold">
+                    <span id="current-time" class="ml-1">-:-</span> <span id="total-duration" class="mr-1 float-right">-:-</span>
+                </div>
+                <div id="progressBar" class="w-full h-3 bg-white mt-[1px] rounded">
+                    <div id="progressBarCurrent" class="w-0 h-full bg-red-600 rounded"></div>
+                </div>
+                <div id="div-buttons" class="flex mt-2 justify-evenly">
+                    <button id="btn-play" onclick="togglePause();">▶</button>
+                    <button id="btn-stop" onclick="stop();">⏹</button>
+                    <button id="btn-reveal" onclick="reveal();">🔎</button>
+                    <button id="btn-info">ℹ️</button>
+                </div>
+                <input id="volume-range" class="w-full mt-3" type="range" min="0" max="100" step="1" oninput="setVolume(this.value)"/>
+                
+                <div id="player" class="w-50 h-50"></div>
+                <audio id="audio" controls>
+                    <source id="audio-source">
+                </audio>
+            </div>
+
+            <div id="div-scoreboard" class="w-full">
+                <button class="w-3/4 p-0 flex mx-auto border border-black shadow-sm text-sm font-medium rounded-md text-white bg-teal-500 hover:bg-teal-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    onclick="addPlayer()"
+                >
+                    <span class="w-full text-center">Add player</span>
+                </button>
+
+                <div id="players" class="w-full mt-2">
+                    
+                </div>
+            </div>
+        </div>
+        <div id="mainPanel" class="w-[88%] px-4 mb-3">
+            <div class="flex justify-start w-full flex-wrap gap-5">
+                <div id="py6MgBsXjYc" name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52 bg-no-repeat bg-center bg-cover relative basis-60 flex-shrink-0 h-[10rem] pl-1" onclick="toggleAudio(this.id);"><span class="font-bold">1</span><span id="anime-py6MgBsXjYc" class="hidden font-mono absolute bottom-0 left-0 px-1 w-full bg-black text-white">Mob Psycho 100 S2</span></div>
+                <div id="QkksQoqMakQ" name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52 bg-no-repeat bg-center bg-cover relative basis-60 flex-shrink-0 h-[10rem] pl-1" onclick="toggleAudio(this.id);"><span class="font-bold">2</span><span id="anime-QkksQoqMakQ" class="hidden font-mono absolute bottom-0 left-0 px-1 w-full bg-black text-white">Mob Psycho 100 S2</span></div>
+                <div id="Ayi2CJU2xmQ" data-cr="true" name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52 bg-no-repeat bg-center bg-cover relative basis-60 flex-shrink-0 h-[10rem] pl-1" onclick="toggleAudio(this.id);"><span class="font-bold">2</span><span id="anime-Ayi2CJU2xmQ" class="hidden font-mono absolute bottom-0 left-0 px-1 w-full bg-black text-white">Mob Psycho 100 S2</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">3</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">4</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">5</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">6</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">7</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">8</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">9</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">10</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">11</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">12</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">13</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">14</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">15</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">16</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">6</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">7</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">8</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">9</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">10</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">11</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">12</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">13</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">14</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">15</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">16</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">6</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">7</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">8</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">9</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">10</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">11</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">12</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">13</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">14</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">15</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">16</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">6</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">7</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">8</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">9</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">10</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">11</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">12</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">13</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">14</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">15</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">16</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">6</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">7</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">8</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">9</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">10</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">11</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">12</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">13</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">14</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">15</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">16</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">6</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">7</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">8</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">9</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">10</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">11</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">12</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">13</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">14</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">15</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">16</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">6</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">7</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">8</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">9</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">10</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">11</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">12</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">13</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">14</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">15</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">16</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">6</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">7</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">8</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">9</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">10</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">11</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">12</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">13</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">14</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">15</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">16</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">6</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">7</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">8</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">9</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">10</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">11</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">12</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">13</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">14</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">15</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">16</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">6</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">7</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">8</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">9</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">10</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">11</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">12</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">13</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">14</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">15</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">16</span></div>
+                <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">17</span></div>
+                <!-- <div class="border-4 border-sky-900 w-full"> 4 </div> -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // // 2. This code loads the IFrame Player API code asynchronously.
+        // var tag = document.createElement('script');
+
+        // tag.src = "https://www.youtube.com/iframe_api";
+        // var firstScriptTag = document.getElementsByTagName('script')[0];
+        // firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        // // 3. This function creates an <iframe> (and YouTube player)
+        // //    after the API code downloads.
+        // var player;
+        // function onYouTubeIframeAPIReady() {
+        //     player = new YT.Player('player', {
+        //         height: '390',
+        //         width: '640',
+        //         videoId: "Ayi2CJU2xmQ",// 'M7lc1UVf-VE',
+        //         playerVars: {
+        //             'playsinline': 1
+        //         },
+        //         events: {
+        //             'onReady': onPlayerReady,
+        //             'onStateChange': onPlayerStateChange
+        //         }
+        //     });
+        // }
+
+        // // 4. The API will call this function when the video player is ready.
+        // function onPlayerReady(event) {
+        //     event.target.playVideo();
+        // }
+
+        // // 5. The API calls this function when the player's state changes.
+        // //    The function indicates that when playing a video (state=1),
+        // //    the player should play for six seconds and then stop.
+        // var done = false;
+        // function onPlayerStateChange(event) {
+        //     if (event.data == YT.PlayerState.PLAYING && !done) {
+        //         setTimeout(stopVideo, 6000);
+        //         done = true;
+        //     }
+        // }
+        // function stopVideo() {
+        //     player.stopVideo();
+        // }
+    </script>
+</body>
+</html>

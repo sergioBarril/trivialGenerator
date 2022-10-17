@@ -46,14 +46,14 @@ function checkListFormat(file) {
 function generateTrivial(e) {
   e.preventDefault();
 
-  if (!listInput.files[0]) {
-    alertError("No hay el bicho!");
-    return;
-  }
+  // if (!listInput.files[0]) {
+  //   alertError("No hay el bicho!");
+  //   return;
+  // }
 
-  alertSuccess("Ok");
+  // alertSuccess("Ok");
   // Send to main using ipcRenderer
-  ipcRenderer.send("trivial:generate", { test: 3 });
+  ipcRenderer.send("trivial:generate", { filePath: filename.innerHTML });
 }
 
 // ALERTS

@@ -12,7 +12,8 @@
   "license": "MIT",
   "dependencies": {
     "electron": "^21.1.1",
-    "toastify-js": "^1.12.0"
+    "toastify-js": "^1.12.0",
+    "ytdl-core": "^4.11.2"
   },
   "devDependencies": {
     "tailwindcss": "^3.1.8"
