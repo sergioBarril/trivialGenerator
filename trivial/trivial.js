@@ -8,6 +8,55 @@ const audioSource = document.getElementById("audio-source");
 
 const btnPlay = document.getElementById("btn-play");
 
+const animeInfo = {
+  py6MgBsXjYc: {
+    anime: "Mob Psycho 100 S2",
+    oped: "Ending",
+    band: "sajou no hana",
+    song: "Grey",
+  },
+  QkksQoqMakQ: {
+    anime: "Kekkai Sensen",
+    oped: "Ending",
+    band: "Unison Square Garden",
+    song: "Sugar Song to Bitter Step",
+  },
+  Ayi2CJU2xmQ: {
+    anime: "Dumbbell Nan Kilo Moteru?",
+    oped: "Opening",
+    band: "Ai Fairuz &amp; Kaito Ishikawa",
+    song: "Onegai Muscle",
+  },
+};
+
+// MODAL
+const modal = document.getElementById("modal-overlay");
+const btnInfo = document.getElementById("btn-info");
+const btnModal = document.getElementById("ok-btn");
+
+const modalAnime = document.getElementById("modal-anime");
+const modalOped = document.getElementById("modal-oped");
+const modalBand = document.getElementById("modal-band");
+const modalSong = document.getElementById("modal-song");
+
+btnModal.onclick = () => (modal.style.display = "none");
+
+window.onclick = function (event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
+};
+
+function infoModal() {
+  if (currentID == "") return;
+  modal.style.display = "block";
+
+  modalAnime.innerHTML = animeInfo[currentID].anime;
+  modalOped.innerHTML = animeInfo[currentID].oped;
+  modalBand.innerHTML = animeInfo[currentID].band;
+  modalSong.innerHTML = animeInfo[currentID].song;
+}
+
 function getPlayerNumber(element) {
   return element.id.split("-").at(-1);
 }
@@ -244,23 +293,36 @@ function togglePause() {
   }
 }
 
+const difficultyClasses = {
+  easy: "border-green-900",
+  normal: "border-sky-900",
+  hard: "border-red-900",
+};
+
 function setFocus(div) {
   div.classList.remove("border-4");
-  div.classList.remove("border-sky-900");
-
   div.classList.add("border-8");
-  div.classList.add("border-red-900");
+
+  const difficulty = div.dataset.difficulty;
+  const borderClass = difficultyClasses[difficulty];
+
+  div.classList.remove(borderClass);
+  div.classList.add("border-red-600");
 }
 
 function removeFocus(div) {
-  div.classList.add("border-4");
-  div.classList.add("border-sky-900");
-
   div.classList.remove("border-8");
-  div.classList.remove("border-red-900");
+  div.classList.add("border-4");
+
+  const difficulty = div.dataset.difficulty;
+  const borderClass = difficultyClasses[difficulty];
+
+  div.classList.remove("border-red-600");
+  div.classList.add(borderClass);
 
   stop();
   currentID = "";
+  currentCR = null;
 }
 
 function reveal() {

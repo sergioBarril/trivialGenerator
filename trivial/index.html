@@ -3,17 +3,42 @@
 
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />    
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;700&display=swap" rel="stylesheet" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="../renderer/css/style.css" />    
-    <title>Trivial Generator</title>
+    <title>Anime Trivial</title>
     <script src="trivial.js" defer></script>
 </head>
 
-<body class="bg-sky-800">
+<body class="bg-sky-800 overflow-y-hidden">
+    <!--Overlay Effect-->
+    <div class="fixed hidden inset-0 z-10 bg-gray-600 bg-opacity-50 h-full w-full" id="modal-overlay">
+
+    <!-- Modal Content -->    
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div class="font-mono mt-3">
+                <h3 class="text-lg text-center leading-6 font-medium text-gray-900">Información extra:</h3>
+                <div class="mt-2 px-7 py-3">
+                    <ul>
+                        <li><span class="font-bold">Anime: </span><span id="modal-anime">Mob Psycho 100 S2</span></li>
+                        <li><span class="font-bold">Tipo: </span><span id="modal-oped">Ending</span></li>
+                        <li><span class="font-bold">Banda: </span><span id="modal-band">sajou no hana</span></li>
+                        <li><span class="font-bold">Canción: </span><span id="modal-song">Grey</span></li>
+                    </ul>
+                </div>
+                <div class="items-center px-4 py-3">
+                    <button id="ok-btn"
+                        class="px-4 py-2 bg-green-500 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-300">
+                        OK
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content -->
     <h1 class="text-white font-bold text-2xl ml-5 mt-5">Anime Trivial</h1>
-    <div class="flex justify-around w-full py-0 px-5 mt-5 gap-5">
-        <div id="leftPanel" class="w-[250px] px-0 mr-1 flex-shrink-0">
+    <div class="flex justify-around w-full py-0 px-5 mt-5 gap-5 overflow-y-scroll">
+        <div id="leftPanel" class="w-[250px] px-0 mr-1 flex-shrink-0 sticky top-0">
             <div id="div-controls" class="border rounded border-black w-full px-2 mb-6 h-32 bg-sky-300">
                 <div id="time" class="pt-1 text-lg font-bold">
                     <span id="current-time" class="ml-1">-:-</span> <span id="total-duration" class="mr-1 float-right">-:-</span>
@@ -25,18 +50,18 @@
                     <button id="btn-play" onclick="togglePause();">▶</button>
                     <button id="btn-stop" onclick="stop();">⏹</button>
                     <button id="btn-reveal" onclick="reveal();">🔎</button>
-                    <button id="btn-info">ℹ️</button>
+                    <button id="btn-info" onclick="infoModal();">ℹ️</button>
                 </div>
                 <input id="volume-range" class="w-full mt-3" type="range" min="0" max="100" step="1" oninput="setVolume(this.value)"/>
                 
-                <div id="player" class="w-50 h-50"></div>
-                <audio id="audio" controls>
+                <div id="player" class="w-0 h-0"></div>
+                <audio id="audio" controls class="hidden">
                     <source id="audio-source">
                 </audio>
             </div>
 
             <div id="div-scoreboard" class="w-full">
-                <button class="w-3/4 p-0 flex mx-auto border border-black shadow-sm text-sm font-medium rounded-md text-white bg-teal-500 hover:bg-teal-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                <button class="w-28 p-1 flex mx-auto border border-black shadow-sm text-sm font-medium rounded-md text-white bg-teal-500 hover:bg-teal-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                     onclick="addPlayer()"
                 >
                     <span class="w-full text-center">Add player</span>
@@ -47,11 +72,11 @@
                 </div>
             </div>
         </div>
-        <div id="mainPanel" class="w-[88%] px-4 mb-3">
+        <div id="mainPanel" class="w-[88%] px-4 mb-3 h-[80vh]">
             <div class="flex justify-start w-full flex-wrap gap-5">
-                <div id="py6MgBsXjYc" name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52 bg-no-repeat bg-center bg-cover relative basis-60 flex-shrink-0 h-[10rem] pl-1" onclick="toggleAudio(this.id);"><span class="font-bold">1</span><span id="anime-py6MgBsXjYc" class="hidden font-mono absolute bottom-0 left-0 px-1 w-full bg-black text-white">Mob Psycho 100 S2</span></div>
-                <div id="QkksQoqMakQ" name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52 bg-no-repeat bg-center bg-cover relative basis-60 flex-shrink-0 h-[10rem] pl-1" onclick="toggleAudio(this.id);"><span class="font-bold">2</span><span id="anime-QkksQoqMakQ" class="hidden font-mono absolute bottom-0 left-0 px-1 w-full bg-black text-white">Mob Psycho 100 S2</span></div>
-                <div id="Ayi2CJU2xmQ" data-cr="true" name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52 bg-no-repeat bg-center bg-cover relative basis-60 flex-shrink-0 h-[10rem] pl-1" onclick="toggleAudio(this.id);"><span class="font-bold">2</span><span id="anime-Ayi2CJU2xmQ" class="hidden font-mono absolute bottom-0 left-0 px-1 w-full bg-black text-white">Mob Psycho 100 S2</span></div>
+                <div id="py6MgBsXjYc" name="song-panel" data-difficulty="normal" class="border-4 border-sky-900 xl:basis-56 lg:basis-52 bg-no-repeat bg-center bg-cover relative basis-60 flex-shrink-0 h-[10rem] pl-1" onclick="toggleAudio(this.id);"><span class="font-bold">1</span><span id="anime-py6MgBsXjYc" class="hidden font-mono absolute bottom-0 left-0 px-1 w-full bg-black text-white">Mob Psycho 100 S2</span></div>
+                <div id="QkksQoqMakQ" name="song-panel" data-difficulty="hard" class="border-4 border-red-900 xl:basis-56 lg:basis-52 bg-no-repeat bg-center bg-cover relative basis-60 flex-shrink-0 h-[10rem] pl-1" onclick="toggleAudio(this.id);"><span class="font-bold">2</span><span id="anime-QkksQoqMakQ" class="hidden font-mono absolute bottom-0 left-0 px-1 w-full bg-black text-white">Mob Psycho 100 S2</span></div>
+                <div id="Ayi2CJU2xmQ" data-cr="true" data-difficulty="easy" name="song-panel" class="border-4 border-green-900 xl:basis-56 lg:basis-52 bg-no-repeat bg-center bg-cover relative basis-60 flex-shrink-0 h-[10rem] pl-1" onclick="toggleAudio(this.id);"><span class="font-bold">2</span><span id="anime-Ayi2CJU2xmQ" class="hidden font-mono absolute bottom-0 left-0 px-1 w-full bg-black text-white">Mob Psycho 100 S2</span></div>
                 <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">3</span></div>
                 <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">4</span></div>
                 <div name="song-panel" class="border-4 border-sky-900 xl:basis-56 lg:basis-52  basis-60 flex-shrink-0 h-[10rem] pl-1"><span class="font-bold">5</span></div>
