@@ -22,6 +22,7 @@ function createMainWindow() {
     title: "Trivial Generator",
     width: 1000,
     height: 700,
+    icon: path.join(__dirname, "renderer/images/icon.ico"),
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: true,
