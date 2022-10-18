@@ -5,11 +5,20 @@ const btnSave = document.getElementById("btn-save");
 const btnCancel = document.getElementById("btn-cancel");
 
 const urlParams = new URLSearchParams(window.location.search);
-const filePath = urlParams.get("list-file");
+const filePath = urlParams.get("filePath");
+
+const newFilePath = document.getElementById("target-path");
+
+if (filePath && filePath.trim() != "") {
+  newFilePath.innerHTML = filePath;
+}
 
 const lbNumSongs = document.getElementById("num-songs");
 
-const songs = fs.readFileSync(filePath, "utf-8").toString().split("\n");
+const songs =
+  filePath && filePath != ""
+    ? fs.readFileSync(filePath, "utf-8").toString().split("\n")
+    : [];
 lbNumSongs.innerHTML = songs.length;
 
 function newRow(i) {
@@ -100,6 +109,12 @@ function addNewRow() {
 }
 
 function validate() {
+  // File path is empty
+  if (newFilePath.innerHTML == "") {
+    alertError("No hay ningún fichero. Añade un fichero de destino.");
+    return false;
+  }
+
   // Anime is not empty
   const animes = Array.from(document.getElementsByName("anime"));
   if (animes.some((anime) => anime.innerHTML.trim() == "")) {
@@ -155,12 +170,12 @@ function saveFile() {
     })
     .join("\n");
 
-  fs.writeFileSync(filePath, text);
-  ipcRenderer.send("list:index", { filePath });
+  fs.writeFileSync(newFilePath.innerHTML, text);
+  ipcRenderer.send("list:index", { filePath: newFilePath.innerHTML });
 }
 
 function goBack() {
-  ipcRenderer.send("list:index", { filePath });
+  ipcRenderer.send("list:index", { filePath: newFilePath.innerHTML });
 }
 
 function deleteRow(e) {
@@ -176,6 +191,10 @@ initTable();
 btnAddRow.addEventListener("click", addNewRow);
 btnSave.addEventListener("click", saveFile);
 btnCancel.addEventListener("click", goBack);
+
+ipcRenderer.on("dialog:listTargetPath", (params) => {
+  newFilePath.innerHTML = params.path;
+});
 
 // ALERTS
 function alertMessage(type, message) {

@@ -39,18 +39,24 @@
     </div>
 
     <div class="mt-6 flex justify-end mr-10">
-      <div class="mr-auto ml-5 text-white font-bold text-lg">
+      <div class="mr-10 ml-5 text-white font-bold text-lg">
         Canciones: <span id="num-songs"></span>
+      </div>
+      <div class="mr-auto ml-5 text-white font-bold text-lg">
+        Fichero de destino: <span id="target-path"></span>
+        <button type="button" class="py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-teal-500 hover:bg-teal-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" onclick="ipcRenderer.send('dialog:saveAs')">
+          Modificar
+        </button>
       </div>
       <button id="btn-add-row" type="button"
         class="w-40 py-2 px-4 ml-10 border border-transparent shadow-sm text-sm font-medium rounded-md text-black bg-emerald-200 hover:bg-teal-900 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
         Add row
       </button >
       <button id="btn-cancel" type="button"
-        class="w-40 py-2 px-4 ml-10 border border-transparent shadow-sm text-sm font-medium rounded-md text-black bg-red-500 hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+        class="w-40 py-2 px-4 ml-10 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-800 hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
         Salir
       </button>
-      <button id="btn-save" type="button" class="w-40 ml-10 py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-teal-500 hover:bg-teal-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+      <button id="btn-save" type="button" class="w-40 ml-10 py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-800 hover:bg-teal-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
         Guardar y salir
       </button>
     </div>

@@ -15,6 +15,8 @@ contextBridge.exposeInMainWorld("fs", {
 
 contextBridge.exposeInMainWorld("path", {
   join: (...args) => path.join(...args),
+  dirname: (filePath) => path.dirname(filePath),
+  filename: (filePath) => path.parse(filePath).name,
 });
 
 contextBridge.exposeInMainWorld("Toastify", {
@@ -25,6 +27,7 @@ contextBridge.exposeInMainWorld("ipcRenderer", {
   send: (channel, data) => ipcRenderer.send(channel, data),
   on: (channel, func) =>
     ipcRenderer.on(channel, (event, ...args) => func(...args)),
+  selectFolder: () => ipcRenderer.send("dialog:openDirectory"),
 });
 
 contextBridge.exposeInMainWorld("mymenu", {
