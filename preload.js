@@ -1,8 +1,8 @@
-const { contextBridge, ipcRenderer, Menu, MenuItem } = require("electron");
+const { contextBridge, ipcRenderer, Menu } = require("electron");
 const os = require("os");
 const fs = require("fs");
 const path = require("path");
-const Toastify = require("toastify-js");
+const alerts = require("./resources/alerts");
 
 contextBridge.exposeInMainWorld("os", {
   homedir: () => os.homedir(),
@@ -19,10 +19,6 @@ contextBridge.exposeInMainWorld("path", {
   filename: (filePath) => path.parse(filePath).name,
 });
 
-contextBridge.exposeInMainWorld("Toastify", {
-  toast: (options) => Toastify(options).showToast(),
-});
-
 contextBridge.exposeInMainWorld("ipcRenderer", {
   send: (channel, data) => ipcRenderer.send(channel, data),
   on: (channel, func) =>
@@ -33,3 +29,5 @@ contextBridge.exposeInMainWorld("ipcRenderer", {
 contextBridge.exposeInMainWorld("mymenu", {
   get: () => new Menu(),
 });
+
+contextBridge.exposeInMainWorld("alerts", alerts);

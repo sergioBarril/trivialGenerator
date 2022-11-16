@@ -1,14 +1,18 @@
-const listForm = document.querySelector("#list-form");
-const listInput = document.querySelector("#list-input");
+const { alertError, alertSuccess } = alerts;
+
+// Get Elements
+const listForm = document.getElementById("list-form");
+const listInput = document.getElementById("list-input");
 
 const hdnListFile = document.getElementById("hdn-list-file");
 
-const outputPath = document.querySelector("#output-path");
-const filename = document.querySelector("#filename");
-const numSongs = document.querySelector("#numSongs");
+const outputPath = document.getElementById("output-path");
+const filename = document.getElementById("filename");
+const numSongs = document.getElementById("numSongs");
 
 const mainContent = document.getElementById("main-content");
 
+// URL params
 const urlParams = new URLSearchParams(window.location.search);
 const filePath = urlParams.get("filePath");
 
@@ -21,9 +25,12 @@ let allSongs = [];
 let i = 0;
 let done = false;
 
+/**
+ * Load the list into the program
+ * @param {string} filePath Filepath to the list
+ */
 function loadList(filePath) {
   const songs = fs.readFileSync(filePath, "utf-8").toString().split("\n");
-
   const editListText = document.getElementById("edit-list-text");
 
   editListText.innerHTML = "Edita tu lista";
@@ -36,6 +43,11 @@ function loadList(filePath) {
   updateFolder(path.dirname(filePath));
 }
 
+/**
+ * Select the file of the list
+ * @param {event} e Event of the file picker
+ * @returns
+ */
 function selectList(e) {
   const file = e.target.files[0];
   if (!file) return;
@@ -59,25 +71,14 @@ function checkListFormat(file) {
   return true;
 }
 
-function generateTrivial(e) {
-  e.preventDefault();
-
-  if (filename.innerHTML == "") {
-    alertError("¡No hay lista!");
-    return;
-  }
-
-  if (outputPath.innerHTML == "") {
-    alertError("¡No hay destino!");
-  }
-
-  checkCopyright();
-}
-
 function selectFolder() {
   ipcRenderer.selectFolder();
 }
 
+/**
+ * Given a folder path, update the output folder field
+ * @param {string} folder
+ */
 function updateFolder(folder) {
   if (folder) {
     const fileWithoutExtension = path.filename(filename.innerHTML);
@@ -85,54 +86,24 @@ function updateFolder(folder) {
   }
 }
 
-// ALERTS
-
-function alertMessage(type, message) {
-  const backgroundColors = {
-    ERROR: "red",
-    SUCCESS: "green",
-    WARNING: "yellow",
-  };
-
-  Toastify.toast({
-    text: message,
-    duration: 5000,
-    close: false,
-    style: {
-      background: backgroundColors[type],
-      color: "white",
-      textAlign: "center",
-    },
-  });
-}
-
-function alertError(message) {
-  alertMessage("ERROR", message);
-}
-
-function alertWarning(message) {
-  alertMessage("WARNING", message);
-}
-
-function alertSuccess(message) {
-  alertMessage("SUCCESS", message);
-}
-
 listInput.addEventListener("change", selectList);
-listForm.addEventListener("submit", generateTrivial);
+listForm.addEventListener("submit", trivialChecks);
 
+/**
+ * Event handler to update the output path folder on dialog change
+ */
 ipcRenderer.on("dialog:outputPath", (params) => {
   updateFolder(params.path);
 });
 
+/** Call backend to change to the editList page */
 function onEditListButton() {
   ipcRenderer.send("list:editList", { filePath: filename.innerHTML });
 }
 
-function sleep(time) {
-  return new Promise((resolve) => setTimeout(resolve, time));
-}
-
+/**
+ * Start checking for Copyright
+ */
 function checkCopyright() {
   alertSuccess("Verificando partidas con copyright...");
 
@@ -149,31 +120,54 @@ function checkCopyright() {
   }
 }
 
-function onCopyError() {
-  crSongs.push(allSongs[i]);
-  console.log("Mala: " + allSongs[i]);
-  i++;
-  if (i < allSongs.length) player.loadVideoById(allSongs[i]);
-  else if (!done) {
-    player.stopVideo();
-    done = true;
-    downloadCr();
+/**
+ * Call the backend to download songs and generate the HTML
+ */
+function generateTrivial() {
+  const cbRando = document.getElementById("randomize-cb");
+
+  ipcRenderer.send("trivial:generate", {
+    listPath: filename.innerHTML,
+    copyrightSongs: crSongs,
+    targetDir: outputPath.innerHTML,
+    randomize: cbRando.checked,
+  });
+}
+/**
+ * Starts the generation of the trivial.
+ * Checks that files are inserted, and starts copyright checks.
+ * @param {*} e
+ * @returns
+ */
+function trivialChecks(e) {
+  e.preventDefault();
+
+  if (filename.innerHTML == "") {
+    alertError("¡No hay lista!");
+    return;
   }
+
+  if (outputPath.innerHTML == "") {
+    alertError("¡No hay destino!");
+  }
+
+  checkCopyright();
 }
 
-//
-//  YOUTUBE
-//
-// 2. This code loads the IFrame Player API code asynchronously.
+// ****************
+//      YOUTUBE
+// *****************
 var tag = document.createElement("script");
 
 tag.src = "https://www.youtube.com/iframe_api";
 var firstScriptTag = document.getElementsByTagName("script")[0];
 firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-// 3. This function creates an <iframe> (and YouTube player)
-//    after the API code downloads.
 var player;
+
+/**
+ * Setup the Youtube Embed
+ */
 function onYouTubeIframeAPIReady() {
   player = new YT.Player("player", {
     height: "390",
@@ -189,29 +183,45 @@ function onYouTubeIframeAPIReady() {
   });
 }
 
-// 5. The API calls this function when the player's state changes.
-//    The function indicates that when playing a video (state=1),
-//    the player should play for six seconds and then stop.
+/**
+ * Event handler for the embedded player in the app if
+ * the song has started playing (no copyright error).
+ *
+ * Then, check the next song, or start the downloads if all have been checked.
+ * @param {*} event
+ */
 function onPlayerStateChange(event) {
-  if (event.data == YT.PlayerState.PLAYING) {
-    console.log("Buena!" + allSongs[i]);
-    i++;
-    if (i < allSongs.length) player.loadVideoById(allSongs[i]);
-    else if (!done) {
-      player.stopVideo();
-      done = true;
-      downloadCr();
-    }
-  }
+  if (event.data != YT.PlayerState.PLAYING) return;
+  checkNextSong();
 }
 
-function downloadCr() {
-  const cbRando = document.getElementById("randomize-cb");
+/**
+ * Event handler for the embedded player in the app if
+ * the song can't be played (copyright error / or other type).
+ *
+ * Then, check the next song, or start the downloads if all have been checked.
+ * @param {*} event
+ */
+function onCopyError() {
+  crSongs.push(allSongs[i]);
+  checkNextSong();
+}
 
-  ipcRenderer.send("trivial:generate", {
-    listPath: filename.innerHTML,
-    copyrightSongs: crSongs,
-    targetDir: outputPath.innerHTML,
-    randomize: cbRando.checked,
-  });
+/**
+ * Helper function. Loads the next song to the embed, or starts
+ * the download if there are no more songs left.
+ */
+function checkNextSong() {
+  i++;
+  if (i < allSongs.length) player.loadVideoById(allSongs[i]);
+  else if (!done) {
+    player.stopVideo();
+    done = true;
+
+    alertSuccess(
+      `Verificación de Copyright terminada. Canciones comprometidas: ${crSongs.length}. Generando trivial...`
+    );
+
+    generateTrivial();
+  }
 }
