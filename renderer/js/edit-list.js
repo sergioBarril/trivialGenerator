@@ -1,3 +1,5 @@
+const { alertError } = alerts;
+
 const rowGroup = document.getElementById("table-row-group");
 
 const btnAddRow = document.getElementById("btn-add-row");
@@ -21,6 +23,11 @@ const songs =
     : [];
 lbNumSongs.innerHTML = songs.length;
 
+/**
+ * Returns the HTML of the new table row
+ * @param {int} i Number of row
+ * @returns HTML code of the new row in the table
+ */
 function newRow(i) {
   return `<div id="row-${i}" class="table-row">
           <div class="table-cell border-b border-slate-100 dark:border-slate-700 pl-2 text-slate-500 dark:text-slate-400">
@@ -195,35 +202,3 @@ btnCancel.addEventListener("click", goBack);
 ipcRenderer.on("dialog:listTargetPath", (params) => {
   newFilePath.innerHTML = params.path;
 });
-
-// ALERTS
-function alertMessage(type, message) {
-  const backgroundColors = {
-    ERROR: "red",
-    SUCCESS: "green",
-    WARNING: "yellow",
-  };
-
-  Toastify.toast({
-    text: message,
-    duration: 5000,
-    close: false,
-    style: {
-      background: backgroundColors[type],
-      color: "white",
-      textAlign: "center",
-    },
-  });
-}
-
-function alertError(message) {
-  alertMessage("ERROR", message);
-}
-
-function alertWarning(message) {
-  alertMessage("WARNING", message);
-}
-
-function alertSuccess(message) {
-  alertMessage("SUCCESS", message);
-}
