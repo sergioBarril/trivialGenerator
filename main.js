@@ -111,6 +111,7 @@ const menu = [
 ipcMain.on("trivial:generate", (e, options) => {
   const crSongs = options.copyrightSongs;
   const targetFolder = options.targetDir;
+  const isShuffle = options.randomize;
 
   // DOWNLOAD OFFLINE
   if (!fs.existsSync(targetFolder)) fs.mkdirSync(targetFolder);
@@ -149,7 +150,7 @@ ipcMain.on("trivial:generate", (e, options) => {
     .toString()
     .split("\n");
 
-  shuffle(songs);
+  if (isShuffle) shuffle(songs);
   const infoObj = {};
   const divs = [];
   songs.forEach((song, i) => {
