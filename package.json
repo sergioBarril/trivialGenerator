@@ -1,7 +1,7 @@
 {
   "name": "trivialgenerator",
   "productName": "Trivial Generator",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Generador de trivials de anime",
   "main": "main.js",
   "scripts": {
