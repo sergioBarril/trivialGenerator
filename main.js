@@ -30,6 +30,7 @@ function createMainWindow() {
     },
   });
 
+  mainWindow.openDevTools();
   mainWindow.loadFile(path.join(__dirname, "./renderer/index.html"));
 }
 
@@ -251,7 +252,14 @@ ipcMain.on("dialog:openDirectory", async () => {
 });
 
 ipcMain.on("dialog:saveAs", async () => {
-  const { canceled, filePath } = await dialog.showSaveDialog(mainWindow);
+  const { canceled, filePath } = await dialog.showSaveDialog(mainWindow, {
+    filters: [
+      {
+        name: "JSON (*.json)",
+        extensions: ["json"],
+      },
+    ],
+  });
   if (!canceled) {
     mainWindow.webContents.send("dialog:listTargetPath", { path: filePath });
   }

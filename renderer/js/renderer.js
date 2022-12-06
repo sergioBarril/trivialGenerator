@@ -53,7 +53,9 @@ function selectList(e) {
   if (!file) return;
 
   if (!checkListFormat(file)) {
-    alertError("¡Formato de archivo inválido! Acepto solo archivos .txt");
+    alertError(
+      "¡Formato de archivo inválido! Acepto solo archivos .txt o .json"
+    );
     return;
   }
   loadList(file.path);
@@ -66,7 +68,9 @@ function selectList(e) {
  * @returns
  */
 function checkListFormat(file) {
-  if (file.name.split(".").pop() !== "txt") return false;
+  const ACCEPTED_FORMATS = ["txt", "json"];
+
+  if (!ACCEPTED_FORMATS.includes(file.name.split(".").pop())) return false;
 
   return true;
 }

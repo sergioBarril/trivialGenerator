@@ -1,15 +1,17 @@
 const { alertError } = alerts;
 
+// Get Elements
 const rowGroup = document.getElementById("table-row-group");
 
 const btnAddRow = document.getElementById("btn-add-row");
 const btnSave = document.getElementById("btn-save");
 const btnCancel = document.getElementById("btn-cancel");
 
+const newFilePath = document.getElementById("target-path");
+
+// URL Params
 const urlParams = new URLSearchParams(window.location.search);
 const filePath = urlParams.get("filePath");
-
-const newFilePath = document.getElementById("target-path");
 
 if (filePath && filePath.trim() != "") {
   newFilePath.innerHTML = filePath;
@@ -17,11 +19,7 @@ if (filePath && filePath.trim() != "") {
 
 const lbNumSongs = document.getElementById("num-songs");
 
-const songs =
-  filePath && filePath != ""
-    ? fs.readFileSync(filePath, "utf-8").toString().split("\n")
-    : [];
-lbNumSongs.innerHTML = songs.length;
+let songs = [];
 
 /**
  * Returns the HTML of the new table row
@@ -30,65 +28,97 @@ lbNumSongs.innerHTML = songs.length;
  */
 function newRow(i) {
   return `<div id="row-${i}" class="table-row">
-          <div class="table-cell border-b border-slate-100 dark:border-slate-700 pl-2 text-slate-500 dark:text-slate-400">
+          <div class="table-cell pl-2 text-slate-500">
             <img id="delete-${i}" name="delete" src="./images/x.png" width="10" class="cursor-pointer">
           </div>
-          <div id="anime-${i}" name="anime" contenteditable class="table-cell border-b border-slate-100 dark:border-slate-700 pl-2 text-slate-500 dark:text-slate-400"></div>
-          <div class="table-cell border-b border-slate-100 dark:border-slate-700 pl-2 text-slate-500 dark:text-slate-400 text-center">
-            <select id="op-ed-${i}" class="bg-slate-100">
-              <option value="op">Opening</option>
-              <option value="ed">Ending</option>              
-            </select>
-          </div>          
-          <div id="band-${i}" name="band" contenteditable class="table-cell border-b border-slate-100 dark:border-slate-700 pl-2 text-slate-500 dark:text-slate-400"></div>          
-          <div id="song-${i}" name="song" contenteditable class="table-cell border-b border-slate-100 dark:border-slate-700 pl-2 text-slate-500 dark:text-slate-400"></div>          
-          <div class="table-cell border-b border-slate-100 dark:border-slate-700 pl-2 text-slate-500 dark:text-slate-400 text-center">
+          <div class="table-cellp-0 text-slate-500 ">
+            <input id="anime-${i}" name="anime" class="pl-2 w-full bg-slate-100" type="text" placeholder="Nombre del anime...">
+          </div>
+          <div class="table-cell pl-2 text-slate-500 text-center">
+            <span>
+              <select id="op-ed-${i}" class="bg-slate-100 w-5/12">
+                <option value="op">Opening</option>
+                <option value="ed">Ending</option>              
+              </select>
+              <input id="op-ed-num-${i}" class="w-12 bg-slate-100" type="number" min="1" value="1">
+            </span>
+          </div>
+          <div class="table-cell p-0 text-slate-500">
+            <input id="band-${i}" name="band" type="text" class="bg-slate-100 pl-2 w-full" placeholder="Artista...">
+          </div>
+          <div class="table-cell p-0 text-slate-500">
+            <input id="song-${i}" name="song" type="text" class="bg-slate-100 pl-2 w-full" placeholder="Nombre de la canción...">
+          </div>
+          <div class="table-cell pl-2 text-slate-500 text-center">
             <select id="difficulty-${i}" class="bg-slate-100" name="difficulty">
               <option value="hard">Hard</option>
               <option selected value="normal">Normal</option>
               <option value="easy">Easy</option>
             </select>
           </div>
-          <div id="yt-link-${i}" name="yt-link" contenteditable
-            class="table-cell border-b border-slate-100 dark:border-slate-700 pl-2 text-slate-500 dark:text-slate-400 pr-2">
+          <div class="table-cell p-0">
+            <input id="yt-link-${i}" name="yt-link" class="bg-slate-100 pl-2 pr-2 text-slate-500 w-full" placeholder="Enlace de youtube...">
           </div>
         </div>`;
 }
 
+function parseOldTxt() {
+  return fs
+    .readFileSync(filePath, "utf-8")
+    .toString()
+    .split("\n")
+    .split("||")
+    .map((x) => x.trim());
+}
+
+function parseJson() {
+  return JSON.parse(fs.readFileSync(filePath, "utf-8").toString());
+}
+
+function parseSimpleTxt() {}
+
+/**
+ * Initialises the table with the loaded list
+ */
 function initTable() {
+  if (filePath && filePath != "") {
+    if (filePath.endsWith(".txt")) songs = parseOldTxt();
+    else if (filePath.endsWith(".json")) songs = parseJson();
+  }
+
+  lbNumSongs.innerHTML = songs.length;
+
   songs.forEach((song, i) => {
-    const songElements = song.split("||").map((x) => x.trim());
     addNewRow();
 
-    const [
-      animeValue,
-      openingValue,
-      bandValue,
-      songValue,
-      difficultyValue,
-      linkValue,
-    ] = songElements;
+    const { anime, oped, number, band, songName, difficulty, link } = song;
 
     const animeField = document.getElementById(`anime-${i}`);
-    animeField.innerHTML = animeValue;
+    animeField.value = anime;
 
     const openingField = document.getElementById(`op-ed-${i}`);
-    openingField.value = openingValue.toLowerCase();
+    openingField.value = oped;
+
+    const openingNumField = document.getElementById(`op-ed-num-${i}`);
+    openingNumField.value = number;
 
     const bandField = document.getElementById(`band-${i}`);
-    bandField.innerHTML = bandValue;
+    bandField.value = band;
 
     const songField = document.getElementById(`song-${i}`);
-    songField.innerHTML = songValue;
+    songField.value = songName;
 
     const difficultyField = document.getElementById(`difficulty-${i}`);
-    difficultyField.value = difficultyValue.toLowerCase();
+    difficultyField.value = difficulty;
 
     const linkField = document.getElementById(`yt-link-${i}`);
-    linkField.innerHTML = linkValue;
+    linkField.innerHTML = link;
   });
 }
 
+/**
+ * Adds a new empty row
+ */
 function addNewRow() {
   const rows = rowGroup.getElementsByClassName("table-row");
   let newRowNumber = rows.length;
@@ -98,18 +128,6 @@ function addNewRow() {
   rowGroup.insertAdjacentHTML("beforeend", newRow(newRowNumber));
 
   lbNumSongs.innerHTML = rows.length;
-
-  const animeField = document.getElementById(`anime-${newRowNumber}`);
-  animeField.spellcheck = false;
-
-  const bandField = document.getElementById(`band-${newRowNumber}`);
-  bandField.spellcheck = false;
-
-  const songField = document.getElementById(`song-${newRowNumber}`);
-  songField.spellcheck = false;
-
-  const linkField = document.getElementById(`yt-link-${newRowNumber}`);
-  linkField.spellcheck = false;
 
   const x = document.getElementById(`delete-${newRowNumber}`);
   x.addEventListener("click", deleteRow);
