@@ -32,7 +32,7 @@ function newRow(i) {
             <img id="delete-${i}" name="delete" src="./images/x.png" width="10" class="cursor-pointer">
           </div>
           <div class="table-cellp-0 text-slate-500 ">
-            <input id="anime-${i}" name="anime" class="pl-2 w-full bg-slate-100" type="text" placeholder="Nombre del anime...">
+            <input id="anime-${i}" name="anime" class="pl-2 w-full bg-slate-100" type="text" spellcheck="false" placeholder="Nombre del anime...">
           </div>
           <div class="table-cell pl-2 text-slate-500 text-center">
             <span>
@@ -44,10 +44,10 @@ function newRow(i) {
             </span>
           </div>
           <div class="table-cell p-0 text-slate-500">
-            <input id="band-${i}" name="band" type="text" class="bg-slate-100 pl-2 w-full" placeholder="Artista...">
+            <input id="band-${i}" name="band" type="text" class="bg-slate-100 pl-2 w-full" spellcheck="false" placeholder="Artista...">
           </div>
           <div class="table-cell p-0 text-slate-500">
-            <input id="song-${i}" name="song" type="text" class="bg-slate-100 pl-2 w-full" placeholder="Nombre de la canción...">
+            <input id="song-${i}" name="song" type="text" class="bg-slate-100 pl-2 w-full" spellcheck="false" placeholder="Nombre de la canción...">
           </div>
           <div class="table-cell pl-2 text-slate-500 text-center">
             <select id="difficulty-${i}" class="bg-slate-100" name="difficulty">
@@ -57,25 +57,22 @@ function newRow(i) {
             </select>
           </div>
           <div class="table-cell p-0">
-            <input id="yt-link-${i}" name="yt-link" class="bg-slate-100 pl-2 pr-2 text-slate-500 w-full" placeholder="Enlace de youtube...">
+            <input id="yt-link-${i}" name="yt-link" class="bg-slate-100 pl-2 pr-2 text-slate-500 w-full" spellcheck="false" placeholder="Enlace de youtube...">
           </div>
         </div>`;
 }
 
-function parseOldTxt() {
-  return fs
-    .readFileSync(filePath, "utf-8")
-    .toString()
-    .split("\n")
-    .split("||")
-    .map((x) => x.trim());
-}
+// function parseOldTxt() {
+//   return fs
+//     .readFileSync(filePath, "utf-8")
+//     .toString()
+//     .split("\n")
+//     .map((x) => x.trim());
+// }
 
 function parseJson() {
   return JSON.parse(fs.readFileSync(filePath, "utf-8").toString());
 }
-
-function parseSimpleTxt() {}
 
 /**
  * Initialises the table with the loaded list
@@ -91,7 +88,7 @@ function initTable() {
   songs.forEach((song, i) => {
     addNewRow();
 
-    const { anime, oped, number, band, songName, difficulty, link } = song;
+    const { anime, oped, opedNumber, band, name, difficulty, link } = song;
 
     const animeField = document.getElementById(`anime-${i}`);
     animeField.value = anime;
@@ -100,19 +97,19 @@ function initTable() {
     openingField.value = oped;
 
     const openingNumField = document.getElementById(`op-ed-num-${i}`);
-    openingNumField.value = number;
+    openingNumField.value = opedNumber;
 
     const bandField = document.getElementById(`band-${i}`);
     bandField.value = band;
 
     const songField = document.getElementById(`song-${i}`);
-    songField.value = songName;
+    songField.value = name;
 
     const difficultyField = document.getElementById(`difficulty-${i}`);
     difficultyField.value = difficulty;
 
     const linkField = document.getElementById(`yt-link-${i}`);
-    linkField.innerHTML = link;
+    linkField.value = link;
   });
 }
 
@@ -133,6 +130,23 @@ function addNewRow() {
   x.addEventListener("click", deleteRow);
 }
 
+/**
+ * Click handler for deleting a row
+ * @param {*} e
+ */
+function deleteRow(e) {
+  const rowNumber = e.target.id.split("-").at(-1);
+  const row = document.getElementById(`row-${rowNumber}`);
+
+  const rows = rowGroup.getElementsByClassName("table-row");
+  row.remove();
+  lbNumSongs.innerHTML = rows.length;
+}
+
+/**
+ * Validate the data
+ * @returns True if data is valid, false and shows an alert if invalid
+ */
 function validate() {
   // File path is empty
   if (newFilePath.innerHTML == "") {
@@ -142,14 +156,14 @@ function validate() {
 
   // Anime is not empty
   const animes = Array.from(document.getElementsByName("anime"));
-  if (animes.some((anime) => anime.innerHTML.trim() == "")) {
+  if (animes.some((anime) => anime.value.trim() == "")) {
     alertError("El campo Anime es obligatorio.");
     return false;
   }
 
   // Youtube is not empty
   const links = Array.from(document.getElementsByName("yt-link"));
-  if (links.some((link) => link.innerHTML.trim() == "")) {
+  if (links.some((link) => link.value.trim() == "")) {
     alertError("El campo Youtube es obligatorio.");
     return false;
   }
@@ -158,10 +172,10 @@ function validate() {
   const re = /youtube\.com\/watch\?v=([^#&?]{11})|youtu\.be\/([^#&?]{11})/;
 
   for (let link of links) {
-    const match = link.innerHTML.match(re);
+    const match = link.value.match(re);
     if (match) {
       const ytId = match[1] || match[2];
-      link.innerHTML = `https://youtu.be/${ytId}`;
+      link.value = `https://youtu.be/${ytId}`;
     } else {
       alertError("El campo Youtube no tiene el formato adecuado.");
       return false;
@@ -171,45 +185,46 @@ function validate() {
   return true;
 }
 
+/**
+ * Build a song from its row number
+ * @param {int} rowNumber
+ * @returns Song object
+ */
+function songConstructor(rowNumber) {
+  return {
+    anime: document.getElementById(`anime-${rowNumber}`).value.trim(),
+    oped: document.getElementById(`op-ed-${rowNumber}`).value,
+    opedNumber: document.getElementById(`op-ed-num-${rowNumber}`).value,
+    band: document.getElementById(`band-${rowNumber}`).value.trim(),
+    name: document.getElementById(`song-${rowNumber}`).value.trim(),
+    difficulty: document.getElementById(`difficulty-${rowNumber}`).value,
+    link: document.getElementById(`yt-link-${rowNumber}`).value.trim(),
+  };
+}
+
+/**
+ * Save a .json file with the edited list
+ * and go back to the main menu
+ */
 function saveFile() {
   if (!validate()) return;
   const rows = rowGroup.getElementsByClassName("table-row");
-  const text = Array.from(rows)
-    .map((row) => {
-      let result = "";
-      const rowNumber = row.id.split("-").at(-1);
-      result +=
-        document.getElementById(`anime-${rowNumber}`).innerHTML.trim() + " || ";
-      result += document.getElementById(`op-ed-${rowNumber}`).value + " || ";
-      result +=
-        document.getElementById(`band-${rowNumber}`).innerHTML.trim() + " || ";
-      result +=
-        document.getElementById(`song-${rowNumber}`).innerHTML.trim() + " || ";
-      result +=
-        document.getElementById(`difficulty-${rowNumber}`).value + " || ";
-      result += document
-        .getElementById(`yt-link-${rowNumber}`)
-        .innerHTML.trim();
+  const songArray = Array.from(rows).map((row) => {
+    const rowNumber = row.id.split("-").at(-1);
+    return songConstructor(rowNumber);
+  });
 
-      return result;
-    })
-    .join("\n");
+  const jsonOutput = JSON.stringify(songArray);
 
-  fs.writeFileSync(newFilePath.innerHTML, text);
+  fs.writeFileSync(newFilePath.innerHTML, jsonOutput);
   ipcRenderer.send("list:index", { filePath: newFilePath.innerHTML });
 }
 
+/**
+ * Return to the main page
+ */
 function goBack() {
   ipcRenderer.send("list:index", { filePath: newFilePath.innerHTML });
-}
-
-function deleteRow(e) {
-  const rowNumber = e.target.id.split("-").at(-1);
-  const row = document.getElementById(`row-${rowNumber}`);
-
-  const rows = rowGroup.getElementsByClassName("table-row");
-  row.remove();
-  lbNumSongs.innerHTML = rows.length;
 }
 
 initTable();
