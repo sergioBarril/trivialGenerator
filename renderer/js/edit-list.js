@@ -62,14 +62,6 @@ function newRow(i) {
         </div>`;
 }
 
-// function parseOldTxt() {
-//   return fs
-//     .readFileSync(filePath, "utf-8")
-//     .toString()
-//     .split("\n")
-//     .map((x) => x.trim());
-// }
-
 function parseJson() {
   return JSON.parse(fs.readFileSync(filePath, "utf-8").toString());
 }
@@ -79,8 +71,7 @@ function parseJson() {
  */
 function initTable() {
   if (filePath && filePath != "") {
-    if (filePath.endsWith(".txt")) songs = parseOldTxt();
-    else if (filePath.endsWith(".json")) songs = parseJson();
+    if (filePath.endsWith(".json")) songs = parseJson();
   }
 
   lbNumSongs.innerHTML = songs.length;
