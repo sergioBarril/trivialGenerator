@@ -19,8 +19,6 @@ if (filePath && filePath.trim() != "") {
 
 const lbNumSongs = document.getElementById("num-songs");
 
-let songs = [];
-
 /**
  * Returns the HTML of the new table row
  * @param {int} i Number of row
@@ -71,10 +69,14 @@ function parseJson() {
  */
 function initTable() {
   if (filePath && filePath != "") {
-    if (filePath.endsWith(".json")) songs = parseJson();
+    if (!filePath.endsWith(".json")) return;
   }
 
+  const { author, songs } = parseJson();
+
   lbNumSongs.innerHTML = songs.length;
+
+  document.getElementById("list-author").value = author;
 
   songs.forEach((song, i) => {
     addNewRow();
@@ -211,7 +213,14 @@ function saveFile() {
     return songConstructor(rowNumber);
   });
 
-  const jsonOutput = JSON.stringify(songArray, null, "\t");
+  const author = document.getElementById("list-author").value;
+
+  const trivialList = {
+    author,
+    songs: songArray,
+  };
+
+  const jsonOutput = JSON.stringify(trivialList, null, "\t");
 
   fs.writeFileSync(newFilePath.innerHTML, jsonOutput);
   ipcRenderer.send("list:index", { filePath: newFilePath.innerHTML });

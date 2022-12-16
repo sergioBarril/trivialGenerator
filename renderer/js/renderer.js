@@ -30,7 +30,9 @@ let done = false;
  * @param {string} filePath Filepath to the list
  */
 function loadList(filePath) {
-  const songs = JSON.parse(fs.readFileSync(filePath, "utf-8").toString());
+  const { author, songs } = JSON.parse(
+    fs.readFileSync(filePath, "utf-8").toString()
+  );
   const editListText = document.getElementById("edit-list-text");
 
   editListText.innerHTML = "Edita tu lista";
