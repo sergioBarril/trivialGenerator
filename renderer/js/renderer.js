@@ -20,7 +20,7 @@ if (filePath && filePath.trim() !== "") {
   loadList(filePath);
 }
 
-let crSongs = [];
+let copyrightIds = [];
 let allSongs = [];
 let i = 0;
 let done = false;
@@ -30,7 +30,7 @@ let done = false;
  * @param {string} filePath Filepath to the list
  */
 function loadList(filePath) {
-  const songs = fs.readFileSync(filePath, "utf-8").toString().split("\n");
+  const songs = JSON.parse(fs.readFileSync(filePath, "utf-8").toString());
   const editListText = document.getElementById("edit-list-text");
 
   editListText.innerHTML = "Edita tu lista";
@@ -107,18 +107,20 @@ function onEditListButton() {
  * Start checking for Copyright
  */
 function checkCopyright() {
-  alertSuccess("Verificando partidas con copyright...");
+  alertSuccess("Verificando canciones con copyright...");
 
   const filePath = filename.innerHTML;
-  const songs = fs.readFileSync(filePath, "utf-8").toString().split("\n");
 
-  allSongs = songs.map((song) =>
-    song.split("||").at(-1).trim().split("/").at(-1).trim()
-  );
-  crSongs = [];
+  allSongs = JSON.parse(fs.readFileSync(filePath, "utf-8").toString());
+
+  allSongs.forEach((song) => {
+    song.id = song.link.split("/").at(-1);
+  });
+
+  copyrightIds = [];
 
   if (i < allSongs.length) {
-    player.loadVideoById(allSongs[i]);
+    player.loadVideoById(allSongs[i].id);
   }
 }
 
@@ -130,7 +132,8 @@ function generateTrivial() {
 
   ipcRenderer.send("trivial:generate", {
     listPath: filename.innerHTML,
-    copyrightSongs: crSongs,
+    songs: allSongs,
+    copyrightIds,
     targetDir: outputPath.innerHTML,
     randomize: cbRando.checked,
   });
@@ -205,7 +208,7 @@ function onPlayerStateChange(event) {
  * @param {*} event
  */
 function onCopyError() {
-  crSongs.push(allSongs[i]);
+  copyrightIds.push(allSongs[i].id);
   checkNextSong();
 }
 
@@ -215,13 +218,13 @@ function onCopyError() {
  */
 function checkNextSong() {
   i++;
-  if (i < allSongs.length) player.loadVideoById(allSongs[i]);
+  if (i < allSongs.length) player.loadVideoById(allSongs[i].id);
   else if (!done) {
     player.stopVideo();
     done = true;
 
     alertSuccess(
-      `Verificación de Copyright terminada. Canciones comprometidas: ${crSongs.length}. Generando trivial...`
+      `Verificación de Copyright terminada. Canciones comprometidas: ${copyrightIds.length}. Generando trivial...`
     );
 
     generateTrivial();

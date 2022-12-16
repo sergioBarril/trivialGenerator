@@ -30,7 +30,6 @@ function createMainWindow() {
     },
   });
 
-  mainWindow.openDevTools();
   mainWindow.loadFile(path.join(__dirname, "./renderer/index.html"));
 }
 
@@ -44,6 +43,10 @@ function isYoutubeURL(url) {
   } else return false;
 }
 
+/**
+ * Shuffle an array
+ * @param {*} array
+ */
 function shuffle(array) {
   for (let i = array.length - 1; i > 0; i--) {
     let j = Math.floor(Math.random() * (i + 1)); // random index from 0 to i
@@ -110,8 +113,9 @@ const menu = [
 
 // Respond to ipcRenderer
 ipcMain.on("trivial:generate", (e, options) => {
-  const crSongs = options.copyrightSongs;
+  const copyrightIds = options.copyrightIds;
   const targetFolder = options.targetDir;
+  const isRandom = options.randomize;
 
   // DOWNLOAD OFFLINE
   if (!fs.existsSync(targetFolder)) fs.mkdirSync(targetFolder);
@@ -119,7 +123,7 @@ ipcMain.on("trivial:generate", (e, options) => {
   const offlineFolder = path.join(targetFolder, "offline");
   if (!fs.existsSync(offlineFolder)) fs.mkdirSync(offlineFolder);
 
-  for (let songID of crSongs) {
+  for (let songID of copyrightIds) {
     const fullPath = path.join(offlineFolder, `${songID}.mp3`);
     if (fs.existsSync(fullPath)) {
       console.log("La cancion ya estaba descargada");
@@ -145,18 +149,18 @@ ipcMain.on("trivial:generate", (e, options) => {
   fs.copyFileSync(trivialTemplate, fullPath);
 
   // GET SONG INFO
-  const songs = fs
-    .readFileSync(options.listPath, "utf-8")
-    .toString()
-    .split("\n");
+  const songs = options.songs;
+  if (isRandom) shuffle(songs);
 
-  shuffle(songs);
   const infoObj = {};
   const divs = [];
   songs.forEach((song, i) => {
-    const { htmlDiv, infoObject } = generateSongPanel(song, i, crSongs);
+    const isOffline = copyrightIds.includes(song.id);
+
+    htmlDiv = generateSongPanel(song, i, isOffline);
     divs.push(htmlDiv);
-    infoObj[infoObject.ytID] = infoObject;
+
+    infoObj[song.id] = song;
   });
 
   // REPLACE IN NEW HTML
@@ -187,41 +191,33 @@ const difficultyClasses = {
   hard: "border-red-900",
 };
 
-function generateSongPanel(songInfo, i, crSongs) {
-  const [anime, opEd, band, song, difficulty, ytURL] = songInfo
-    .split("||")
-    .map((x) => x.trim());
-  const ytID = ytURL.split("/").at(-1).trim();
-
-  const isOffline = crSongs.includes(ytID);
-
-  const htmlDiv = `<div id="${ytID}"
+/**
+ * Returns the HTML snippet that corresponds to the i-th song
+ * @param {Object} song Song object with its info
+ * @param {int} i Song number
+ * @param {boolean} isOffline True if the song could not be reproduced from the embed
+ * @returns
+ */
+function generateSongPanel(song, i, isOffline) {
+  const htmlDiv = `<div id="${song.id}"
     data-cr="${isOffline ? "true" : "false"}"
-    data-difficulty="${difficulty}"
+    data-difficulty="${song.difficulty}"
     name="song-panel"
     class="border-4 ${
-      difficultyClasses[difficulty]
+      difficultyClasses[song.difficulty]
     } xl:basis-56 lg:basis-52 bg-no-repeat bg-center bg-cover relative basis-60 flex-shrink-0 h-[10rem] pl-1"
     onclick="toggleAudio(this.id);"
   >
     <span class="font-bold">${i + 1}</span>
     <span
-      id="anime-${ytID}"
+      id="anime-${song.id}"
       class="hidden font-mono absolute bottom-0 left-0 px-1 w-full bg-black text-white"
     >
-      ${anime}
+      ${song.anime}
     </span>
   </div>`;
 
-  const infoObject = {
-    anime,
-    oped: opEd == "op" ? "Opening" : "Ending",
-    band,
-    song,
-    ytID,
-  };
-
-  return { htmlDiv, infoObject };
+  return htmlDiv;
 }
 
 ipcMain.on("list:index", (e, options) => {

@@ -1189,10 +1189,12 @@
             if (currentID == "") return;
             modal.style.display = "block";
 
-            modalAnime.innerHTML = animeInfo[currentID].anime;
-            modalOped.innerHTML = animeInfo[currentID].oped;
-            modalBand.innerHTML = animeInfo[currentID].band;
-            modalSong.innerHTML = animeInfo[currentID].song;
+            const song = animeInfo[currentID];
+
+            modalAnime.innerHTML = song.anime;
+            modalOped.innerHTML = song.oped + " " + song.opedNumber;
+            modalBand.innerHTML = song.band;
+            modalSong.innerHTML = song.name;
         }
 
         function getPlayerNumber(element) {

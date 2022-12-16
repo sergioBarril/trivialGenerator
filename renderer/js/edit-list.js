@@ -182,9 +182,14 @@ function validate() {
  * @returns Song object
  */
 function songConstructor(rowNumber) {
+  const opedValue = document.getElementById(`op-ed-${rowNumber}`).value;
+  let oped = "";
+  if (opedValue === "op") oped = "Opening";
+  else if (opedValue === "ed") oped = "Ending";
+
   return {
     anime: document.getElementById(`anime-${rowNumber}`).value.trim(),
-    oped: document.getElementById(`op-ed-${rowNumber}`).value,
+    oped,
     opedNumber: document.getElementById(`op-ed-num-${rowNumber}`).value,
     band: document.getElementById(`band-${rowNumber}`).value.trim(),
     name: document.getElementById(`song-${rowNumber}`).value.trim(),
@@ -205,7 +210,7 @@ function saveFile() {
     return songConstructor(rowNumber);
   });
 
-  const jsonOutput = JSON.stringify(songArray);
+  const jsonOutput = JSON.stringify(songArray, null, "\t");
 
   fs.writeFileSync(newFilePath.innerHTML, jsonOutput);
   ipcRenderer.send("list:index", { filePath: newFilePath.innerHTML });
