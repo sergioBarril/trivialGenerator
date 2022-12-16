@@ -85,7 +85,8 @@ function initTable() {
     animeField.value = anime;
 
     const openingField = document.getElementById(`op-ed-${i}`);
-    openingField.value = oped;
+    openingField.value =
+      oped === "Opening" ? "op" : oped === "Ending" ? "ed" : "";
 
     const openingNumField = document.getElementById(`op-ed-num-${i}`);
     openingNumField.value = opedNumber;
