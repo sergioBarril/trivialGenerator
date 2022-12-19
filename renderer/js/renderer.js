@@ -100,6 +100,16 @@ ipcRenderer.on("dialog:outputPath", (params) => {
   updateFolder(params.path);
 });
 
+ipcRenderer.on("trivial:success", () => {
+  alertSuccess("Trivial generado correctamente");
+});
+
+ipcRenderer.on("trivial:errors", (numErrors) => {
+  alertError(
+    `Ha habido ${numErrors} canciones que no se han podido descargar. Generando HTML...`
+  );
+});
+
 /** Call backend to change to the editList page */
 function onEditListButton() {
   ipcRenderer.send("list:editList", { filePath: filename.innerHTML });
@@ -113,7 +123,9 @@ function checkCopyright() {
 
   const filePath = filename.innerHTML;
 
-  allSongs = JSON.parse(fs.readFileSync(filePath, "utf-8").toString());
+  const trivialList = JSON.parse(fs.readFileSync(filePath, "utf-8").toString());
+
+  allSongs = trivialList.songs;
 
   allSongs.forEach((song) => {
     song.id = song.link.split("/").at(-1);

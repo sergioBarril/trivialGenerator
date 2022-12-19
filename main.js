@@ -101,20 +101,10 @@ app.whenReady().then(() => {
   mainWindow.on("close", () => (mainWindow = null));
 });
 
-// Menu template
-const menu = [
-  {
-    label: "File",
-    submenu: [
-      { label: "Quit", click: () => app.quit(), accelerator: "Ctrl+W" },
-    ],
-  },
-];
-
-// Respond to ipcRenderer
-ipcMain.on("trivial:generate", (e, options) => {
+function trivialGeneration(options) {
   const copyrightIds = options.copyrightIds;
   const targetFolder = options.targetDir;
+  const songs = options.songs;
   const isRandom = options.randomize;
 
   // DOWNLOAD OFFLINE
@@ -123,22 +113,66 @@ ipcMain.on("trivial:generate", (e, options) => {
   const offlineFolder = path.join(targetFolder, "offline");
   if (!fs.existsSync(offlineFolder)) fs.mkdirSync(offlineFolder);
 
-  for (let songID of copyrightIds) {
+  const songsToDownload = copyrightIds.filter((songID) => {
     const fullPath = path.join(offlineFolder, `${songID}.mp3`);
-    if (fs.existsSync(fullPath)) {
-      console.log("La cancion ya estaba descargada");
-      continue;
-    }
+    return !fs.existsSync(fullPath);
+  });
 
-    const writeStream = fs.createWriteStream(fullPath);
-    const download = ytdl(`https://youtu.be/${songID}`, {
-      filter: "audioonly",
-    });
-    download.pipe(writeStream);
-    console.log(songID + " descargada.");
-  }
+  Promise.allSettled(
+    songsToDownload.map((songID) => {
+      const fullPath = path.join(offlineFolder, `${songID}.mp3`);
 
-  // GENERATE HTML
+      return new Promise((resolve, reject) => {
+        const writeStream = fs.createWriteStream(fullPath);
+        const download = ytdl(`https://youtu.be/${songID}`, {
+          filter: "audioonly",
+        });
+
+        download.pipe(writeStream);
+        download.on("end", () => {
+          console.log(songID + " descargada.");
+          resolve();
+        });
+        download.on("error", () => {
+          reject(songID);
+        });
+      });
+    })
+  ).then((results) => {
+    const successful = results.filter(
+      (result) => result.status == "fulfilled"
+    ).length;
+
+    const errorIds = results
+      .filter((result) => result.status === "rejected")
+      .map((result) => result.reason);
+
+    console.log(
+      `${successful} songs downloaded, ${errorIds.length} had errors.`
+    );
+
+    console.error(errorIds);
+
+    if (errorIds.length > 0)
+      // SEND ERROR SIGNAL
+      mainWindow.webContents.send("trivial:errors", errorIds.length);
+
+    generateHTML(targetFolder, songs, copyrightIds, errorIds, isRandom);
+
+    // SEND SUCCESS SIGNAL
+    mainWindow.webContents.send("trivial:success");
+  });
+}
+
+/**
+ * Generate the HTML for the trivial
+ * @param {string} targetFolder Folder where the html will be in
+ * @param {*} songs Song objects for the trivial
+ * @param {*} copyrightIds IDs of the songs that were downloaded
+ * @param {*} errorIds IDs of the songs that couldn't be downloaded
+ * @param {boolean} isRandom True if the songs need to be shuffled
+ */
+function generateHTML(targetFolder, songs, copyrightIds, errorIds, isRandom) {
   const trivialTemplate = path.join(
     __dirname,
     "./trivial/trivialTemplate.html"
@@ -149,15 +183,15 @@ ipcMain.on("trivial:generate", (e, options) => {
   fs.copyFileSync(trivialTemplate, fullPath);
 
   // GET SONG INFO
-  const songs = options.songs;
   if (isRandom) shuffle(songs);
 
   const infoObj = {};
   const divs = [];
   songs.forEach((song, i) => {
     const isOffline = copyrightIds.includes(song.id);
+    const isKO = errorIds.includes(song.id);
 
-    htmlDiv = generateSongPanel(song, i, isOffline);
+    htmlDiv = generateSongPanel(song, i, isOffline, isKO);
     divs.push(htmlDiv);
 
     infoObj[song.id] = song;
@@ -183,6 +217,11 @@ ipcMain.on("trivial:generate", (e, options) => {
       if (err) return console.log(err);
     });
   });
+}
+
+// Respond to ipcRenderer
+ipcMain.on("trivial:generate", (e, options) => {
+  trivialGeneration(options);
 });
 
 const difficultyClasses = {
@@ -196,16 +235,20 @@ const difficultyClasses = {
  * @param {Object} song Song object with its info
  * @param {int} i Song number
  * @param {boolean} isOffline True if the song could not be reproduced from the embed
+ * @param {boolean} isKO True if the song couldn't be downloaded due to an error
  * @returns
  */
-function generateSongPanel(song, i, isOffline) {
+function generateSongPanel(song, i, isOffline, isKO) {
+  const isError = isOffline && isKO;
+
   const htmlDiv = `<div id="${song.id}"
     data-cr="${isOffline ? "true" : "false"}"
     data-difficulty="${song.difficulty}"
     name="song-panel"
     class="border-4 ${
       difficultyClasses[song.difficulty]
-    } xl:basis-56 lg:basis-52 bg-no-repeat bg-center bg-cover relative basis-60 flex-shrink-0 h-[10rem] pl-1"
+    } xl:basis-56 lg:basis-52 bg-no-repeat bg-center bg-cover relative basis-60 flex-shrink-0 h-[10rem] pl-1
+     ${isError ? "bg-black" : ""}"
     onclick="toggleAudio(this.id);"
   >
     <span class="font-bold">${i + 1}</span>
