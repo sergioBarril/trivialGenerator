@@ -68,9 +68,7 @@ function parseJson() {
  * Initialises the table with the loaded list
  */
 function initTable() {
-  if (filePath && filePath != "") {
-    if (!filePath.endsWith(".json")) return;
-  }
+  if (!filePath || filePath === "" || !filePath.endsWith(".json")) return;
 
   const { author, songs } = parseJson();
 

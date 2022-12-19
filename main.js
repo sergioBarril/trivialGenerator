@@ -151,8 +151,6 @@ function trivialGeneration(options) {
       `${successful} songs downloaded, ${errorIds.length} had errors.`
     );
 
-    console.error(errorIds);
-
     if (errorIds.length > 0)
       // SEND ERROR SIGNAL
       mainWindow.webContents.send("trivial:errors", errorIds.length);
