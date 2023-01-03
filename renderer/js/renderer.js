@@ -19,6 +19,8 @@ const mainContent = document.getElementById("main-content");
 const urlParams = new URLSearchParams(window.location.search);
 const filePath = urlParams.get("filePath");
 
+let author = "";
+
 if (filePath && filePath.trim() !== "") {
   loadList(filePath);
 }
@@ -27,7 +29,6 @@ let copyrightIds = [];
 let allSongs = [];
 let i = 0;
 let done = false;
-let author = "";
 
 /**
  * Load the list into the program
