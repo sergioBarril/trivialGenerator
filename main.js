@@ -242,6 +242,7 @@ function generateSummary(summaryPath, songs, author) {
   });
 
   summary.songs.sort((a, b) => a.anime.localeCompare(b.anime));
+  summary.count = summary.songs.length;
 
   const summaryString = JSON.stringify(summary, null, "\t");
   fs.writeFileSync(summaryPath, summaryString);
