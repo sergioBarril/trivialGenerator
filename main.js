@@ -104,8 +104,10 @@ app.whenReady().then(() => {
 function trivialGeneration(options) {
   const copyrightIds = options.copyrightIds;
   const targetFolder = options.targetDir;
+  const author = options.author;
   const songs = options.songs;
   const isRandom = options.randomize;
+  const summaryPath = options.summaryPath;
 
   // DOWNLOAD OFFLINE
   if (!fs.existsSync(targetFolder)) fs.mkdirSync(targetFolder);
@@ -156,6 +158,11 @@ function trivialGeneration(options) {
       mainWindow.webContents.send("trivial:errors", errorIds.length);
 
     generateHTML(targetFolder, songs, copyrightIds, errorIds, isRandom);
+
+    // GENERATE SUMMARY
+    if (summaryPath && summaryPath.trim() !== "") {
+      generateSummary(summaryPath, songs, author);
+    }
 
     // SEND SUCCESS SIGNAL
     mainWindow.webContents.send("trivial:success");
@@ -215,6 +222,29 @@ function generateHTML(targetFolder, songs, copyrightIds, errorIds, isRandom) {
       if (err) return console.log(err);
     });
   });
+}
+
+/**
+ * Generates the JSON file with all the songs played so far
+ * @param {string} summaryPath Path to the summary file
+ * @param {Array<Object>} songs Array of song objects
+ * @param {string} author Author of the list
+ */
+function generateSummary(summaryPath, songs, author) {
+  const summary = JSON.parse(fs.readFileSync(summaryPath, "utf-8").toString());
+
+  const summaryLinks = summary.songs.map((song) => song.link);
+
+  songs.forEach((song) => {
+    delete song.id;
+    song.author = author;
+    if (!summaryLinks.includes(song.link)) summary.songs.push(song);
+  });
+
+  summary.songs.sort((a, b) => a.anime.localeCompare(b.anime));
+
+  const summaryString = JSON.stringify(summary, null, "\t");
+  fs.writeFileSync(summaryPath, summaryString);
 }
 
 // Respond to ipcRenderer

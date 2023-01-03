@@ -27,13 +27,16 @@ let copyrightIds = [];
 let allSongs = [];
 let i = 0;
 let done = false;
+let author = "";
 
 /**
  * Load the list into the program
  * @param {string} filePath Filepath to the list
  */
 function loadList(filePath) {
-  const { songs } = JSON.parse(fs.readFileSync(filePath, "utf-8").toString());
+  const { author: listAuthor, songs } = JSON.parse(
+    fs.readFileSync(filePath, "utf-8").toString()
+  );
   const editListText = document.getElementById("edit-list-text");
 
   editListText.innerHTML = "Edita tu lista";
@@ -46,6 +49,8 @@ function loadList(filePath) {
 
   const summarySongs = document.getElementById("summary-song-number");
   summarySongs.innerHTML = getSummarySongs();
+
+  author = listAuthor;
 
   updateFolder(path.dirname(filePath));
 }
@@ -240,6 +245,7 @@ function generateTrivial() {
   ipcRenderer.send("trivial:generate", {
     listPath: filename.innerHTML,
     summaryPath: summaryPath.innerHTML,
+    author,
     songs: allSongs,
     copyrightIds,
     targetDir: outputPath.innerHTML,
