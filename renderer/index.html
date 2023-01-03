@@ -20,7 +20,7 @@
     class="max-w-xl m-auto h-screen flex flex-col align-center justify-center"
     >
     <div class="flex flex-row align-center justify-center">  
-      <div class="flex flex-col w-full items-center justify-center bg-grey-lighter">
+      <div class="flex flex-col w-full items-center justify-center bg-grey-lighter mx-5">
         <label
         class="w-64 flex flex-col items-center px-4 py-7 bg-white text-gray-500 rounded-lg shadow-lg tracking-wide uppercase border border-blue cursor-pointer hover:text-teal-800"
         >
@@ -30,14 +30,21 @@
         <input name="list-file" id="list-input" type="file" class="hidden" />        
       </label>
     </div>
-    <div id="edit-list-div" class="flex-col w-full items-center justify-center bg-grey-lighter">
+    <div id="edit-list-div" class="flex-col w-full items-center justify-center mx-5 bg-grey-lighter">
         <label
         class="w-64 flex flex-col items-center px-4 py-7 bg-white text-gray-500 rounded-lg shadow-lg tracking-wide uppercase border border-blue cursor-pointer hover:text-teal-800">
         <img src="./images/editList.png" width="32" />
         <span id="edit-list-text" class="mt-2 leading-normal">Crea tu lista</span>
         <input id="edit-list-input" type="button" class="hidden" onclick="onEditListButton();" />
-        <input name="list-file" id="hdn-list-file" type="text" class="hidden">
         </label>
+    </div>
+    <div id="summary-div" class="hidden flex-col w-full items-center justify-center mx-5 bg-grey-lighter">
+      <label
+        class="w-64 max-h-[122px] flex flex-col items-center px-4 py-7 bg-white text-gray-500 rounded-lg shadow-lg tracking-wide uppercase border border-blue cursor-pointer hover:text-teal-800">
+        <img src="./images/summary.png" width="32" />
+        <span id="summary-text" class="mt-2 leading-normal">Cargar recopilatorio</span>        
+        <input id="summary-input-top" name="summary-input" type="file" class="hidden" />
+      </label>
     </div>
 </div>
 <div class="hidden" id="main-content">
@@ -64,18 +71,41 @@
           </div>
         </div>
 
-        
-        <!-- Button -->
-        <div class="mt-6">
-          <button
-          type="submit"
-          class="w-80 m-auto flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-teal-500 hover:bg-teal-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-          >
-          Generar Trivial
-        </button>
-        
-      </form>
-    </div>
+      <div id="summary-info-div" class="hidden">
+        <hr class="my-2">
+
+
+          <p class="text-white text-lg text-center font-mono mt-2"><strong>Recopilatorio de listas: </strong><span id="summary-path"></span></p>
+          <label class="w-56 cursor-pointer mx-auto mt-4 flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-teal-500 hover:bg-teal-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+          <input
+            id="summary-input-button"
+            name="summary-input"
+            type="file"
+            class="hidden"
+            >
+          </input>
+          Seleccionar otro recopilatorio
+          </label>
+        </p>
+        <!-- Info -->
+        <p class="text-white text-lg text-center font-mono mt-6"><strong>Canciones en el recopilatorio: </strong><span id="summary-song-number"></span></p>
+        <p class="text-white text-lg text-center font-mono mt-6"><strong>Última modificación del recopilatorio: </strong><span
+            id="summary-last-modified"></span></p>
+
+        <hr class="my-2">
+      </div>
+          
+          <!-- Button -->
+          <div class="mt-6">
+            <button
+            type="submit"
+            class="w-80 m-auto flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-teal-500 hover:bg-teal-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+            Generar Trivial
+          </button>
+          
+        </form>
+      </div>
     </div>
 
     <div class="w-0 h-0" id="player"></div>

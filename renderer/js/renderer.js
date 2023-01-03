@@ -1,15 +1,18 @@
-const { alertError, alertSuccess } = alerts;
+const { alertError, alertSuccess, alertWarning } = alerts;
 
 // Get Elements
 const listForm = document.getElementById("list-form");
 const listInput = document.getElementById("list-input");
 
-const hdnListFile = document.getElementById("hdn-list-file");
+const summaryInput = document.getElementById("summary-input");
 
 const outputPath = document.getElementById("output-path");
+const summaryPath = document.getElementById("summary-path");
+
 const filename = document.getElementById("filename");
 const numSongs = document.getElementById("numSongs");
 
+const summaryDiv = document.getElementById("summary-div");
 const mainContent = document.getElementById("main-content");
 
 // URL params
@@ -30,19 +33,90 @@ let done = false;
  * @param {string} filePath Filepath to the list
  */
 function loadList(filePath) {
-  const { author, songs } = JSON.parse(
-    fs.readFileSync(filePath, "utf-8").toString()
-  );
+  const { songs } = JSON.parse(fs.readFileSync(filePath, "utf-8").toString());
   const editListText = document.getElementById("edit-list-text");
 
   editListText.innerHTML = "Edita tu lista";
 
   mainContent.classList.remove("hidden");
+  summaryDiv.classList.remove("hidden");
   listForm.style.display = "block";
-  hdnListFile.value = filePath;
   filename.innerHTML = filePath;
   numSongs.innerHTML = songs.length;
+
+  const summarySongs = document.getElementById("summary-song-number");
+  summarySongs.innerHTML = getSummarySongs();
+
   updateFolder(path.dirname(filePath));
+}
+
+/**
+ * Load the summary into the program
+ * @param {string} filePath Filepath to the summary
+ * @param {Date} lastModified Date of last time the file was edited
+ */
+function loadSummary(filePath, lastModified) {
+  const summaryPath = document.getElementById("summary-path");
+  summaryPath.innerHTML = filePath;
+
+  const summarySongs = document.getElementById("summary-song-number");
+  summarySongs.innerHTML = getSummarySongs();
+
+  const summaryLastModified = document.getElementById("summary-last-modified");
+  summaryLastModified.innerHTML = lastModified.toLocaleDateString("es-ES");
+
+  document.getElementById("summary-info-div").classList.remove("hidden");
+}
+
+/**
+ * Returns a string with the number of songs that there are in a summary and,
+ * if appropriate, the number of songs that are being added with the current list
+ * @returns
+ */
+function getSummarySongs() {
+  // Summary songs
+  if (!summaryPath?.innerHTML || summaryPath?.innerHTML.trim() === "") return;
+  const summary = JSON.parse(
+    fs.readFileSync(summaryPath.innerHTML.trim(), "utf-8").toString()
+  );
+
+  let summarySongNumber = `${summary.songs.length}`;
+
+  const hasList = filename?.innerHTML && filename?.innerHTML.trim() != "";
+
+  // Compare with current list
+  if (hasList) {
+    const list = JSON.parse(
+      fs.readFileSync(filename.innerHTML.trim(), "utf-8").toString()
+    );
+    const repeatedSongs = getRepeatedSongs(list.songs, summary.songs);
+
+    if (repeatedSongs.length === list.songs.length) {
+      alertWarning("Esta lista ya estaba dentro del recopilatorio.");
+    } else if (repeatedSongs.length > 0) {
+      alertWarning(
+        `Hay ${repeatedSongs.length} canciones que ya estaban en el recopilatorio. ¡Asegúrate bien!`
+      );
+    }
+
+    summarySongNumber += ` (+${list.songs.length - repeatedSongs.length})`;
+  }
+
+  return summarySongNumber;
+}
+
+function getRepeatedSongs(listSongs, summarySongs) {
+  const listLinks = listSongs.map((song) => song.link);
+
+  return summarySongs.filter((song) => listLinks.includes(song.link));
+}
+
+function getSongNumber(filePath) {
+  if (!filePath || filePath.trim() == "") return null;
+
+  const { songs } = JSON.parse(fs.readFileSync(filePath, "utf-8").toString());
+
+  return songs.length;
 }
 
 /**
@@ -60,6 +134,20 @@ function selectList(e) {
   }
   loadList(file.path);
   alertSuccess("Success!");
+}
+
+function setSummary(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  if (!checkListFormat(file)) {
+    alertError("¡Formato de archivo inválido! Acepto solo archivos .json");
+    return;
+  }
+
+  const lastModified = new Date(file.lastModified);
+  loadSummary(file.path, lastModified);
+  alertSuccess("Recopilatorio de listas cargado");
 }
 
 /**
@@ -91,6 +179,11 @@ function updateFolder(folder) {
 }
 
 listInput.addEventListener("change", selectList);
+
+document
+  .getElementsByName("summary-input")
+  .forEach((input) => input.addEventListener("change", setSummary));
+
 listForm.addEventListener("submit", trivialChecks);
 
 /**
@@ -146,6 +239,7 @@ function generateTrivial() {
 
   ipcRenderer.send("trivial:generate", {
     listPath: filename.innerHTML,
+    summaryPath: summaryPath.innerHTML,
     songs: allSongs,
     copyrightIds,
     targetDir: outputPath.innerHTML,

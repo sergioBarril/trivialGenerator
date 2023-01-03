@@ -13,7 +13,7 @@ function alertMessage(type, message) {
     close: false,
     style: {
       background: BACKGROUND_COLORS[type],
-      color: "white",
+      color: ["ERROR", "SUCCESS"].includes(type) ? "white" : "black",
       textAlign: "center",
     },
   }).showToast();

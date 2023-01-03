@@ -21,7 +21,7 @@ function createMainWindow() {
   mainWindow = new BrowserWindow({
     title: "Trivial Generator",
     width: 1000,
-    height: 700,
+    height: 1000,
     icon: path.join(__dirname, "renderer/images/icon.ico"),
     webPreferences: {
       contextIsolation: true,
@@ -29,7 +29,7 @@ function createMainWindow() {
       preload: path.join(__dirname, "preload.js"),
     },
   });
-
+  mainWindow.maximize();
   mainWindow.loadFile(path.join(__dirname, "./renderer/index.html"));
 }
 
@@ -262,7 +262,6 @@ function generateSongPanel(song, i, isOffline, isKO) {
 }
 
 ipcMain.on("list:index", (e, options) => {
-  mainWindow.unmaximize();
   mainWindow.loadFile(path.join(__dirname, "./renderer/index.html"), {
     query: {
       filePath: options.filePath,
