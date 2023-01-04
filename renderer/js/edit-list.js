@@ -17,6 +17,8 @@ if (filePath && filePath.trim() != "") {
   newFilePath.innerHTML = filePath;
 }
 
+let highlightedRowNumber = -1;
+
 const lbNumSongs = document.getElementById("num-songs");
 
 /**
@@ -29,7 +31,7 @@ function newRow(i) {
           <div class="table-cell pl-2 text-slate-500">
             <img id="delete-${i}" name="delete" src="./images/x.png" width="10" class="cursor-pointer">
           </div>
-          <div class="table-cellp-0 text-slate-500 ">
+          <div class="table-cell p-0 text-slate-500 ">
             <input id="anime-${i}" name="anime" class="pl-2 w-full bg-slate-100" type="text" spellcheck="false" placeholder="Nombre del anime...">
           </div>
           <div class="table-cell pl-2 text-slate-500 text-center">
@@ -120,6 +122,10 @@ function addNewRow() {
 
   const x = document.getElementById(`delete-${newRowNumber}`);
   x.addEventListener("click", deleteRow);
+
+  const newRowElement = document.getElementById(`row-${newRowNumber}`);
+  const inputs = newRowElement.querySelectorAll("input, select");
+  inputs.forEach((input) => input.addEventListener("focus", focusRow));
 }
 
 /**
@@ -239,3 +245,49 @@ btnCancel.addEventListener("click", goBack);
 ipcRenderer.on("dialog:listTargetPath", (params) => {
   newFilePath.innerHTML = params.path;
 });
+
+/**
+ * Given an row number, make its row darker
+ * @param {*} rowNumber Number of the row to highlight
+ */
+function highlightRow(rowNumber) {
+  const row = document.getElementById(`row-${rowNumber}`);
+
+  row.classList.remove("bg-slate-100");
+  row.classList.add("bg-slate-400");
+  row.classList.add("text-slate-800");
+
+  row.querySelectorAll("input, select").forEach((input) => {
+    input.classList.remove("bg-slate-100");
+    input.classList.add("bg-slate-400");
+
+    input.classList.add("text-slate-800");
+    input.classList.add("placeholder-white");
+  });
+}
+
+/**
+ * Lowlights the row highlighted
+ */
+function lowlightRow() {
+  const row = document.getElementById(`row-${highlightedRowNumber}`);
+  row.classList.remove("bg-slate-400");
+  row.classList.remove("text-slate-800");
+  row.classList.add("bg-slate-100");
+
+  row.querySelectorAll("input, select").forEach((input) => {
+    input.classList.add("bg-slate-100");
+    input.classList.remove("bg-slate-400");
+    input.classList.remove("text-slate-800");
+    input.classList.remove("placeholder-white");
+  });
+}
+
+function focusRow(e) {
+  const rowNumber = parseInt(e.target.id.split("-").at(-1));
+  highlightRow(rowNumber);
+  if (highlightedRowNumber >= 0 && rowNumber != highlightedRowNumber)
+    lowlightRow();
+
+  highlightedRowNumber = rowNumber;
+}
