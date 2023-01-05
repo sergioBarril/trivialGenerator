@@ -77,9 +77,11 @@ function loadSummary(filePath, lastModified) {
 /**
  * Returns a string with the number of songs that there are in a summary and,
  * if appropriate, the number of songs that are being added with the current list
+ *
+ * Verbose = true generates alerts depending on the number
  * @returns
  */
-function getSummarySongs() {
+function getSummarySongs(verbose = true) {
   // Summary songs
   if (!summaryPath?.innerHTML || summaryPath?.innerHTML.trim() === "") return;
   const summary = JSON.parse(
@@ -97,9 +99,9 @@ function getSummarySongs() {
     );
     const repeatedSongs = getRepeatedSongs(list.songs, summary.songs);
 
-    if (repeatedSongs.length === list.songs.length) {
+    if (verbose && repeatedSongs.length === list.songs.length) {
       alertWarning("Esta lista ya estaba dentro del recopilatorio.");
-    } else if (repeatedSongs.length > 0) {
+    } else if (verbose && repeatedSongs.length > 0) {
       alertWarning(
         `Hay ${repeatedSongs.length} canciones que ya estaban en el recopilatorio. ¡Asegúrate bien!`
       );
@@ -200,6 +202,9 @@ ipcRenderer.on("dialog:outputPath", (params) => {
 });
 
 ipcRenderer.on("trivial:success", () => {
+  const summarySongs = document.getElementById("summary-song-number");
+  summarySongs.innerHTML = getSummarySongs(false);
+
   alertSuccess("Trivial generado correctamente");
 });
 

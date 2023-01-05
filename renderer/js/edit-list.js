@@ -38,7 +38,8 @@ function newRow(i) {
             <span>
               <select id="op-ed-${i}" class="bg-slate-100 w-5/12">
                 <option value="op">Opening</option>
-                <option value="ed">Ending</option>              
+                <option value="ed">Ending</option>  
+                <option value="ost">OST</option>            
               </select>
               <input id="op-ed-num-${i}" class="w-12 bg-slate-100" type="number" min="1" value="1">
             </span>
@@ -88,7 +89,7 @@ function initTable() {
 
     const openingField = document.getElementById(`op-ed-${i}`);
     openingField.value =
-      oped === "Opening" ? "op" : oped === "Ending" ? "ed" : "";
+      oped === "Opening" ? "op" : oped === "Ending" ? "ed" : "ost";
 
     const openingNumField = document.getElementById(`op-ed-num-${i}`);
     openingNumField.value = opedNumber;
@@ -193,6 +194,7 @@ function songConstructor(rowNumber) {
   let oped = "";
   if (opedValue === "op") oped = "Opening";
   else if (opedValue === "ed") oped = "Ending";
+  else if (opedValue === "ost") oped = "OST";
 
   return {
     anime: document.getElementById(`anime-${rowNumber}`).value.trim(),
