@@ -30,6 +30,7 @@
     },
     "portable": {
       "artifactName": "trivialAnime.exe"
-    }
+    },
+    "files": "!listas"
   }
 }
