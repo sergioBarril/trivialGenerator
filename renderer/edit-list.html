@@ -17,25 +17,39 @@
   </head>
   <body class="bg-teal-700 font-mono">
 
-    <h1 class="text-white font-bold text-2xl ml-5 mt-5">Editor de listas</h1>
+    <h1 class="text-white font-bold text-2xl ml-5 mt-5">Editor de listas de:
+      <select id="type-select" class="bg-transparent border-none">
+        <option value="Anime" class="bg-teal-700">Anime</option>
+        <option selected="true" value="Game" class="bg-teal-700">Videojuegos</option>
+      </select>
+    </h1>
     
-    <div class="flex justify-center">
-    <div id="table" class="block bg-slate-100 w-full border-collapse table-auto text-m border-blue mt-5 mx-5  max-h-[75vh] overflow-x-auto overflow-y-auto">
-      <div id="header" class="table-header-group w-full">
-        <div class="table-row w-full">
-          <div class="table-cell border-b font-medium p-4 pl-2 pt-2 pb-2 text-slate-600 text-center" style="width:2%"></div>
-          <div class="table-cell border-b font-bold p-4 pl-2 pt-2 pb-2 text-slate-600 text-center w-2/12">Anime</div>
-          <div class="table-cell border-b font-bold p-4 pl-2 pt-2 pb-2 text-slate-600 text-center w-2/12">Opening/Ending</div>
-          <div class="table-cell border-b font-bold p-4 pl-2 pt-2 pb-2 text-slate-600 text-center w-1/12">Banda</div>
-          <div class="table-cell border-b font-bold p-4 pl-2 pt-2 pb-2 text-slate-600 text-center w-2/12">Canción</div>
-          <div class="table-cell border-b font-bold p-4 pl-2 pt-2 pb-2 text-slate-600 text-center w-1/12">Dificultad</div>
-          <div class="table-cell border-b font-bold p-4 pl-2 pt-2 pb-2 text-slate-600 text-center w-[12%]">Youtube</div>
-        </div>
-      </div>
-
-      <div id="table-row-group" class="table-row-group">
-      </div>
-    </div>
+    <div class="flex justify-center max-h-[75vh] overflow-y-auto">
+    <table id="table" class="table border-collapse bg-slate-100 w-full text-m border-blue mt-5 mx-5">
+      <thead id="anime-table-header" class= "w-full">
+        <tr class="w-full">
+          <th class="sticky top-0  bg-slate-100 font-medium p-4 pl-2 pt-2 pb-2 text-slate-600 text-center after:content-[''] after:border-b after:absolute after:left-0 after:bottom-0 after:w-full" style="width:2%"></th>
+          <th class="sticky top-0  bg-slate-100 font-bold p-4 pl-2 pt-2 pb-2 text-slate-600 text-center w-2/12 after:content-[''] after:border-b after:absolute after:left-0 after:bottom-0 after:w-full">Anime</th>
+          <th class="sticky top-0  bg-slate-100 font-bold p-4 pl-2 pt-2 pb-2 text-slate-600 text-center w-2/12 after:content-[''] after:border-b after:absolute after:left-0 after:bottom-0 after:w-full">Opening/Ending</th>
+          <th class="sticky top-0  bg-slate-100 font-bold p-4 pl-2 pt-2 pb-2 text-slate-600 text-center w-1/12 after:content-[''] after:border-b after:absolute after:left-0 after:bottom-0 after:w-full">Banda</th>
+          <th class="sticky top-0  bg-slate-100 font-bold p-4 pl-2 pt-2 pb-2 text-slate-600 text-center w-2/12 after:content-[''] after:border-b after:absolute after:left-0 after:bottom-0 after:w-full">Canción</th>
+          <th class="sticky top-0  bg-slate-100 font-bold p-4 pl-2 pt-2 pb-2 text-slate-600 text-center w-1/12 after:content-[''] after:border-b after:absolute after:left-0 after:bottom-0 after:w-full">Dificultad</th>
+          <th class="sticky top-0  bg-slate-100 font-bold p-4 pl-2 pt-2 pb-2 text-slate-600 text-center w-[12%] after:content-[''] after:border-b after:absolute after:left-0 after:bottom-0 after:w-full">Youtube</th>
+        </tr>
+      </thead>
+      <thead id="game-table-header" class="w-full">
+        <tr class="w-full">
+          <th class="sticky top-0 bg-slate-100 font-medium pl-2 pt-2 pb-2 text-slate-600 text-center w-[2%] after:content-[''] after:border-b after:absolute after:left-0 after:bottom-0 after:w-full" style="width:2%"></th>
+          <th class="sticky top-0 bg-slate-100 font-bold pl-2 pt-2 pb-2 text-slate-600 text-center w-[16%] after:content-[''] after:border-b after:absolute after:left-0 after:bottom-0 after:w-full">Saga</th>
+          <th class="sticky top-0 bg-slate-100 font-bold pl-2 pt-2 pb-2 text-slate-600 text-center w-[16%] after:content-[''] after:border-b after:absolute after:left-0 after:bottom-0 after:w-full">Juego</th>
+          <th class="sticky top-0 bg-slate-100 font-bold pl-2 pt-2 pb-2 text-slate-600 text-center w-[40%] after:content-[''] after:border-b after:absolute after:left-0 after:bottom-0 after:w-full">Situación</th>          
+          <th class="sticky top-0 bg-slate-100 font-bold pl-2 pt-2 pb-2 text-slate-600 text-center w-[8%] after:content-[''] after:border-b after:absolute after:left-0 after:bottom-0 after:w-full">Dificultad</th>
+          <th class="sticky top-0 bg-slate-100 font-bold pl-2 pt-2 pb-2 text-slate-600 text-center after:content-[''] after:border-b after:absolute after:left-0 after:bottom-0 after:w-full">Youtube</th>
+          </tr>
+      </thead>
+      <tbody id="anime-table-row-group" class="table-row-group"></tbody>
+      <tbody id="game-table-row-group" class="table-row-group"></tbody>
+    </table>
     </div>
 
     <div class="mt-6 flex justify-end mr-10">
