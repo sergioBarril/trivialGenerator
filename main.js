@@ -10,7 +10,10 @@ const {
 const path = require("path");
 
 const fs = require("fs");
-const ytdl = require("ytdl-core");
+
+global.ReadableStream = require("web-streams-polyfill").ReadableStream;
+
+const ytdl = require("@distube/ytdl-core");
 
 let mainWindow;
 
@@ -135,7 +138,8 @@ function trivialGeneration(options) {
           console.log(songID + " descargada.");
           resolve();
         });
-        download.on("error", () => {
+        download.on("error", (err) => {
+          console.error("Error downloading " + songID);
           reject(songID);
         });
       });
